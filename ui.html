@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Paradox Macro</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #050510;
+            color: #e0e6ff;
+            padding: 15px;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            gap: 15px;
+        }
+
+        .main-panel {
+            width: 550px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #0a0a15 0%, #1a1225 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            overflow: hidden;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: rgba(10, 10, 20, 0.9);
+            border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: #c4b5fd;
+        }
+
+        .tab-btn.active {
+            color: #a78bfa;
+            background: rgba(139, 92, 246, 0.15);
+            border-bottom-color: #8b5cf6;
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .tab-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .tab-content::-webkit-scrollbar-track {
+            background: rgba(10, 10, 20, 0.5);
+            border-radius: 4px;
+        }
+
+        .tab-content::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 4px;
+        }
+
+        .side-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 550px;
+        }
+
+        .game-container {
+            flex: 1;
+            background: #0a0a15;
+            border: 3px solid rgba(139, 92, 246, 0.7);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .game-container-header {
+            padding: 8px 12px;
+            background: rgba(10, 10, 20, 0.95);
+            border-bottom: 2px solid rgba(139, 92, 246, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-container-header h3 {
+            font-size: 14px;
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .game-container-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .game-container-controls button {
+            padding: 5px 12px;
+            font-size: 12px;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 6px;
+            color: #c4b5fd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .game-container-controls button:hover {
+            background: rgba(139, 92, 246, 0.4);
+        }
+
+        .game-embed-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a15;
+            position: relative;
+        }
+
+        .status-indicator {
+            padding: 6px 12px;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 6px;
+            font-size: 12px;
+            color: #c4b5fd;
+        }
+
+        .status-indicator.attached {
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.4);
+        }
+
+        .section {
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #a78bfa;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: none;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c4b5fd;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(10, 10, 20, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            color: #e0e6ff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        select option {
+            background: #0a0a15;
+            color: #e0e6ff;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px 0;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .keybind-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .keybind-group input {
+            flex: 1;
+        }
+
+        .keybind-group button {
+            padding: 12px 20px;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 8px;
+            color: #c4b5fd;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .keybind-group button:hover {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: #8b5cf6;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(139, 92, 246, 0.25);
+            border-color: #8b5cf6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .status-box {
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .status-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .status-box::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 4px;
+        }
+
+        .status-box::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 4px;
+        }
+
+        .status-line {
+            color: #93c5fd;
+            margin-bottom: 4px;
+        }
+
+        .status-line.success {
+            color: #4ade80;
+        }
+
+        .status-line.error {
+            color: #f87171;
+        }
+
+        .status-line.warning {
+            color: #fbbf24;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .running-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Unit Cards */
+        .unit-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .unit-header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .unit-index {
+            font-weight: 600;
+            color: #a78bfa;
+            font-size: 13px;
+            min-width: 50px;
+        }
+
+        .unit-fields {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .unit-field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .unit-field label {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-bottom: 0;
+        }
+
+        .unit-field input,
+        .unit-field select {
+            padding: 6px 8px;
+            font-size: 11px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            color: #e0e6ff;
+        }
+
+        .unit-coords {
+            grid-column: span 4;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-pick {
+            padding: 6px 10px;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 4px;
+            color: #c084fc;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-pick:hover {
+            background: rgba(168, 85, 247, 0.3);
+            border-color: #a855f7;
+        }
+
+        .unit-note {
+            grid-column: span 4;
+        }
+
+        .unit-note input {
+            width: 100%;
+        }
+
+        .config-display {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #c4b5fd;
+        }
+
+        .copy-paste-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+        }
+
+        .copy-paste-row span {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .copy-paste-row select {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: auto;
+        }
+
+        .copy-paste-row button {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .units-scroll {
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .units-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .units-scroll::-webkit-scrollbar-track {
+            background: rgba(10, 10, 20, 0.5);
+            border-radius: 3px;
+        }
+
+        .units-scroll::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 3px;
+        }
+
+        /* Map Preview */
+        .map-preview-container {
+            position: relative;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: rgba(10, 10, 20, 0.5);
+        }
+
+        .map-preview-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .map-preview-placeholder {
+            padding: 30px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .unit-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.3);
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .unit-dot:hover {
+            transform: translate(-50%, -50%) scale(1.3);
+            background: rgba(0, 255, 0, 0.6);
+        }
+
+        .unit-dot-label {
+            position: absolute;
+            font-size: 8px;
+            font-weight: bold;
+            color: #00ff00;
+            transform: translate(-50%, -150%);
+            text-shadow: 0 0 3px #000, 0 0 3px #000;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-panel">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('stage')" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i> Stage</button>
+            <button class="tab-btn" onclick="switchTab('units')" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="swords" style="width: 16px; height: 16px;"></i> Units</button>
+            <button class="tab-btn" onclick="switchTab('settings')" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="settings" style="width: 16px; height: 16px;"></i> Settings</button>
+            <button class="tab-btn" onclick="switchTab('update')" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i> Update</button>
+            <button class="tab-btn" onclick="switchTab('guide')" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="book-open" style="width: 16px; height: 16px;"></i> Guide</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Stage Tab -->
+            <div id="tab-stage" class="tab-panel active">
+                <div class="section">
+                    <div class="section-title">Stage Selection</div>
+                    
+                    <div class="form-group">
+                        <label for="mode">Mode</label>
+                        <select id="mode" onchange="updateModeVisibility(); saveStoryConfig(); loadUnitConfig();">
+                            <option value="Story">Story</option>
+                            <option value="Legend">Legend</option>
+                            <option value="Raids">Raids</option>
+                            <option value="Siege">Siege</option>
+                            <option value="Auto-Challenges">Auto-Challenges</option>
+                        </select>
+                    </div>
+
+                    <div id="story-options">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <select id="location" onchange="saveStoryConfig(); loadUnitConfig();">
+                                    <option value="Leaf Village">Leaf Village</option>
+                                    <option value="Planet Namek">Planet Namek</option>
+                                    <option value="Dark Hollow">Dark Hollow</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="act">Act</label>
+                                <select id="act" onchange="saveStoryConfig(); loadUnitConfig();">
+                                    <option value="Act 1">Act 1</option>
+                                    <option value="Act 2">Act 2</option>
+                                    <option value="Act 3">Act 3</option>
+                                    <option value="Act 4">Act 4</option>
+                                    <option value="Act 5">Act 5</option>
+                                    <option value="Act 6">Act 6</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="nightmare" onchange="saveStoryConfig();">
+                                <span>Nightmare Mode</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Raid Options -->
+                    <div id="raid-options" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="raid-location">Raid</label>
+                                <select id="raid-location" onchange="updateRaidActs(); saveStoryConfig(); loadUnitConfig();">
+                                    <option value="Frozen Gate">Frozen Gate</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="raid-act">Act</label>
+                                <select id="raid-act" onchange="saveStoryConfig(); loadUnitConfig();">
+                                    <option value="Act 1">Act 1</option>
+                                    <option value="Act 2">Act 2</option>
+                                    <option value="Act 3">Act 3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Siege Options -->
+                    <div id="siege-options" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="siege-location">Siege</label>
+                                <select id="siege-location" onchange="updateSiegeActs(); saveStoryConfig(); loadUnitConfig();">
+                                    <option value="Blue Dungeon">Blue Dungeon Siege</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="siege-act">Act</label>
+                                <select id="siege-act" onchange="saveStoryConfig(); loadUnitConfig();">
+                                    <option value="Act 1">Act 1</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auto-Challenges Options -->
+                    <div id="challenge-options" class="hidden">
+                        <div class="form-group">
+                            <label for="challenge-location">Challenge Map</label>
+                            <select id="challenge-location" onchange="saveStoryConfig(); loadUnitConfig();">
+                                <option value="Leaf Village">Leaf Village</option>
+                                <option value="Planet Namek">Planet Namek</option>
+                                <option value="Dark Hollow">Dark Hollow</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-top: 12px; padding: 12px; background: rgba(251, 191, 36, 0.1); border-left: 3px solid #fbbf24; border-radius: 4px;">
+                            <p style="color: #fbbf24; font-size: 13px; margin: 0; font-weight: 600;">
+                                <i data-lucide="info" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Auto-Challenges Mode
+                            </p>
+                            <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0 0;">
+                                • Automatically does challenges every 30 minutes<br>
+                                • Runs selected stage between challenges<br>
+                                • Uses configs from Settings/Challenges/[Location]<br>
+                                • Map positioning detected automatically
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Quick Actions</div>
+                    <p style="color: #94a3b8; margin-bottom: 16px; font-size: 14px;">
+                        Press <strong style="color: #a78bfa;">F1</strong> to start, <strong style="color: #a78bfa;">F3</strong> to stop
+                    </p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Macro Status</div>
+                    <div class="status-box" id="status-log">
+                        <div class="status-line">Ready. Press F1 to start, F3 to stop.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Units Tab -->
+            <div id="tab-units" class="tab-panel">
+                <div class="config-display">
+                    Current Config: <strong id="unit-config-display">Leaf Village - Act 1</strong>
+                </div>
+
+                <div class="map-preview-container" id="map-preview-container">
+                    <div class="map-preview-placeholder" id="map-placeholder">
+                        <i data-lucide="image-off" style="width: 16px; height: 16px; display: inline-block;"></i> No map image yet. Press F4 in-game to take a screenshot.
+                    </div>
+                    <img id="map-preview-img" style="display: none;" alt="Map Preview">
+                    <div id="unit-dots-container"></div>
+                </div>
+
+                <div class="units-scroll">
+                    <div id="units-container"></div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 16px;">
+                    <button class="btn btn-secondary" onclick="loadUnitConfig()">↻ Refresh</button>
+                    <button class="btn btn-primary" onclick="saveUnitConfig()" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="save" style="width: 16px; height: 16px;"></i> Save</button>
+                    <button class="btn btn-secondary" onclick="clearUnitConfig()" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i> Clear All</button>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="tab-settings" class="tab-panel">
+                <div class="section">
+                    <div class="section-title">Keybinds</div>
+                    
+                    <div class="form-group">
+                        <label>Start Keybind</label>
+                        <div class="keybind-group">
+                            <input type="text" id="start-key" value="F1" readonly>
+                            <button onclick="captureKey('start')">Set</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stop Keybind</label>
+                        <div class="keybind-group">
+                            <input type="text" id="stop-key" value="F3" readonly>
+                            <button onclick="captureKey('stop')">Set</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="applyKeybinds()">Apply Keybinds</button>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="webhook" style="width: 18px; height: 18px;"></i> Discord Webhook</div>
+                    <p style="color: #94a3b8; margin-bottom: 12px; font-size: 13px;">
+                        Send victory/defeat notifications to Discord with screenshots and stats.
+                    </p>
+                    
+                    <div class="form-group">
+                        <label>Webhook URL</label>
+                        <input type="text" id="discord-webhook-url" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; padding: 10px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; color: #e0e6ff; font-size: 13px;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="btn btn-secondary" onclick="saveWebhook()" style="flex: 1;">
+                            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Webhook
+                        </button>
+                        <button class="btn btn-secondary" onclick="testWebhook()" style="flex: 1;">
+                            <i data-lucide="send" style="width: 14px; height: 14px;"></i> Test Webhook
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(15, 23, 42, 0.4); border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="color: #94a3b8; font-size: 13px;">Session Stats</span>
+                            <button onclick="resetStats()" style="padding: 4px 8px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 4px; color: #ef4444; font-size: 11px; cursor: pointer;">Reset</button>
+                        </div>
+                        <div style="display: flex; gap: 16px;">
+                            <div style="flex: 1; text-align: center;">
+                                <p style="color: #4ade80; font-size: 24px; font-weight: 600;" id="stats-wins">0</p>
+                                <p style="color: #94a3b8; font-size: 11px;">Wins</p>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <p style="color: #ef4444; font-size: 24px; font-weight: 600;" id="stats-losses">0</p>
+                                <p style="color: #94a3b8; font-size: 11px;">Losses</p>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <p style="color: #a78bfa; font-size: 24px; font-weight: 600;" id="stats-ratio">0%</p>
+                                <p style="color: #94a3b8; font-size: 11px;">Win Rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="refresh-ccw" style="width: 18px; height: 18px;"></i> Auto-Reconnect</div>
+                    <p style="color: #94a3b8; margin-bottom: 12px; font-size: 13px;">
+                        Automatically reconnect to your private server when disconnect is detected.
+                    </p>
+                    
+                    <div class="form-group">
+                        <label>Private Server Link</label>
+                        <input type="text" id="private-server-link" placeholder="https://www.roblox.com/games/..." style="width: 100%; padding: 10px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; color: #e0e6ff; font-size: 13px;">
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="savePrivateServer()" style="margin-top: 8px;">
+                        <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Private Server
+                    </button>
+                    
+                    <div style="margin-top: 12px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 4px;">
+                        <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                            <strong style="color: #60a5fa;">Note:</strong> Make sure disconnect.png exists in the buttons folder for detection to work.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Game Window</div>
+                    <p style="color: #94a3b8; margin-bottom: 16px; font-size: 14px;">
+                        Attach the Roblox window to see it in the side panel.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Update Tab -->
+            <div id="tab-update" class="tab-panel">
+                <div class="section">
+                    <div class="section-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="refresh-cw" style="width: 18px; height: 18px;"></i> Auto-Update</div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div>
+                            <p style="color: #e0e6ff; font-size: 14px; margin-bottom: 4px;">Current Version</p>
+                            <p style="color: #a78bfa; font-size: 24px; font-weight: 600;" id="current-version">Loading...</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="checkForUpdates()" id="check-update-btn">
+                            <i data-lucide="search" style="width: 16px; height: 16px;"></i> Check for Updates
+                        </button>
+                    </div>
+                    
+                    <div id="update-status" style="padding: 12px; background: rgba(15, 23, 42, 0.6); border-radius: 8px; margin-bottom: 16px; display: none;">
+                        <p id="update-status-text" style="color: #94a3b8; font-size: 14px;"></p>
+                    </div>
+                    
+                    <div id="update-available" style="display: none; padding: 16px; background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 10px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <i data-lucide="party-popper" style="width: 24px; height: 24px; color: #a78bfa;"></i>
+                            <div>
+                                <p style="color: #4ade80; font-size: 16px; font-weight: 600;">Update Available!</p>
+                                <p style="color: #94a3b8; font-size: 14px;">Version <span id="new-version" style="color: #4ade80; font-weight: 600;"></span> is ready to download</p>
+                            </div>
+                        </div>
+                        
+                        <div id="release-notes" style="background: rgba(10, 10, 20, 0.5); padding: 12px; border-radius: 6px; margin-bottom: 16px; max-height: 150px; overflow-y: auto;">
+                            <p style="color: #94a3b8; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Release Notes</p>
+                            <p id="release-notes-text" style="color: #e0e6ff; font-size: 13px; line-height: 1.6; white-space: pre-wrap;"></p>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="installUpdate()" id="install-update-btn" style="width: 100%; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-color: rgba(74, 222, 128, 0.5);">
+                            ⬇️ Download & Install Update
+                        </button>
+                    </div>
+                    
+                    <div id="no-update" style="display: none; padding: 16px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 10px; text-align: center;">
+                        <span style="font-size: 32px;">✅</span>
+                        <p style="color: #4ade80; font-size: 16px; font-weight: 500; margin-top: 8px;">You're up to date!</p>
+                        <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">You have the latest version installed.</p>
+                    </div>
+                    
+                    <div id="update-progress" style="display: none; padding: 16px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <div class="spinner" style="width: 24px; height: 24px; border: 3px solid rgba(139, 92, 246, 0.3); border-top-color: #8b5cf6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            <p id="progress-text" style="color: #e0e6ff; font-size: 14px;">Preparing update...</p>
+                        </div>
+                        <div style="background: rgba(10, 10, 20, 0.5); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div id="progress-bar" style="background: linear-gradient(90deg, #8b5cf6, #a78bfa); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="update-complete" style="display: none; padding: 16px; background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 10px; text-align: center;">
+                        <i data-lucide="party-popper" style="width: 32px; height: 32px; color: #a78bfa;"></i>
+                        <p style="color: #4ade80; font-size: 16px; font-weight: 600; margin-top: 8px;">Update Complete!</p>
+                        <p style="color: #94a3b8; font-size: 13px; margin-top: 4px; margin-bottom: 16px;">Please restart the application to apply changes.</p>
+                        <button class="btn btn-primary" onclick="restartApp()" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-color: rgba(74, 222, 128, 0.5);">
+                            <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i> Restart Now
+                        </button>
+                    </div>
+                    
+                    <div id="need-extractor" style="display: none; padding: 16px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 10px;">
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <i data-lucide="package" style="width: 32px; height: 32px; color: #f59e0b;"></i>
+                            <p style="color: #fbbf24; font-size: 16px; font-weight: 600; margin-top: 8px;">Archive Extractor Required</p>
+                            <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">To install updates, you need WinRAR or 7-Zip installed.</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button class="btn btn-primary" onclick="downloadWinRAR()" id="download-winrar-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                📥 Download WinRAR
+                            </button>
+                            <button class="btn btn-secondary" onclick="download7Zip()" id="download-7zip-btn">
+                                📥 Download 7-Zip
+                            </button>
+                        </div>
+                        
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 12px; text-align: center;">
+                            After installing, click "Check for Updates" again to continue.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">ℹ️ About</div>
+                    <p style="color: #94a3b8; font-size: 13px; line-height: 1.6;">
+                        <strong style="color: #e0e6ff;">AnimeParadoxMacro</strong><br>
+                        An automation tool for Roblox Anime games.<br><br>
+                        Updates are downloaded from GitHub and installed automatically.<br>
+                        Your configuration files (unit placements, keybinds) are preserved during updates.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Guide Tab -->
+            <div id="tab-guide" class="tab-panel">
+                <div class="section">
+                    <div class="section-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="book-open" style="width: 18px; height: 18px;"></i> Complete Guide</div>
+                    
+                    <!-- Guide Navigation Tabs -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="guide-tab-btn active" onclick="switchGuideTab('requirements')" style="flex: 1; min-width: 120px; padding: 8px 12px; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 6px; color: #e0e6ff; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="monitor" style="width: 14px; height: 14px;"></i> Requirements</button>
+                        <button class="guide-tab-btn" onclick="switchGuideTab('getting-started')" style="flex: 1; min-width: 120px; padding: 8px 12px; background: transparent; border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 6px; color: #94a3b8; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="gamepad-2" style="width: 14px; height: 14px;"></i> Getting Started</button>
+                        <button class="guide-tab-btn" onclick="switchGuideTab('config-setup')" style="flex: 1; min-width: 120px; padding: 8px 12px; background: transparent; border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 6px; color: #94a3b8; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="settings" style="width: 14px; height: 14px;"></i> Config Setup</button>
+                        <button class="guide-tab-btn" onclick="switchGuideTab('unit-config')" style="flex: 1; min-width: 120px; padding: 8px 12px; background: transparent; border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 6px; color: #94a3b8; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="swords" style="width: 14px; height: 14px;"></i> Unit Config</button>
+                        <button class="guide-tab-btn" onclick="switchGuideTab('advanced')" style="flex: 1; min-width: 120px; padding: 8px 12px; background: transparent; border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 6px; color: #94a3b8; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="wrench" style="width: 14px; height: 14px;"></i> Advanced</button>
+                        <button class="guide-tab-btn" onclick="switchGuideTab('troubleshooting')" style="flex: 1; min-width: 120px; padding: 8px 12px; background: transparent; border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 6px; color: #94a3b8; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="search" style="width: 14px; height: 14px;"></i> Troubleshooting</button>
+                    </div>
+
+                    <!-- Requirements Section -->
+                    <div class="guide-section" id="guide-requirements">
+                        <h3 style="color: #a78bfa; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i data-lucide="monitor" style="width: 18px; height: 18px;"></i> PC & Roblox Requirements</h3>
+                        
+                        <h4 style="color: #c4b5fd; margin-top: 16px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="monitor" style="width: 16px; height: 16px;"></i> PC Settings</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            Your PC must be configured with these exact settings for the macro to work correctly:<br><br>
+                            
+                            <strong style="color: #10b981; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="monitor" style="width: 14px; height: 14px;"></i> Display Resolution</strong>
+                            <span style="margin-left: 20px;">• <strong style="color: #e0e6ff;">1920x1080</strong> (Full HD) - Recommended</span><br>
+                            <span style="margin-left: 20px;">• Other compatible resolutions may work but require custom coordinate setup</span><br>
+                            <span style="margin-left: 20px;">• Lower resolutions will cause placement issues</span><br><br>
+                            
+                            <strong style="color: #10b981; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="maximize" style="width: 14px; height: 14px;"></i> Display Scale</strong>
+                            <span style="margin-left: 20px;">• Must be set to <strong style="color: #e0e6ff;">100%</strong></span><br>
+                            <span style="margin-left: 20px;">• Any other scale (125%, 150%, etc.) will break coordinate detection</span><br>
+                            <span style="margin-left: 20px;">• Check: Settings → System → Display → Scale</span><br><br>
+                            
+                            <strong style="color: #ef4444; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="alert-triangle" style="width: 14px; height: 14px;"></i> Critical</strong>
+                            <span style="margin-left: 20px;">• Both settings are mandatory for proper macro functionality</span><br>
+                            <span style="margin-left: 20px;">• Incorrect settings will result in misplaced units and navigation failures</span>
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i> Roblox Settings</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            Configure Roblox with these exact settings in-game:<br><br>
+                            
+                            <strong style="color: #a78bfa; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="image" style="width: 14px; height: 14px;"></i> Graphics Settings</strong>
+                            <span style="margin-left: 20px;">• Graphics Mode: <strong style="color: #e0e6ff;">Manual</strong></span><br>
+                            <span style="margin-left: 20px;">• Graphics Quality: <strong style="color: #e0e6ff;">Lowest (1)</strong></span><br>
+                            <span style="margin-left: 20px;">• This ensures consistent performance and button detection</span><br><br>
+                            
+                            <strong style="color: #a78bfa; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="video" style="width: 14px; height: 14px;"></i> Frame Rate</strong>
+                            <span style="margin-left: 20px;">• FPS Cap: <strong style="color: #e0e6ff;">60 FPS</strong></span><br>
+                            <span style="margin-left: 20px;">• Do not uncap or use higher frame rates</span><br>
+                            <span style="margin-left: 20px;">• Stable frame rate improves macro reliability</span><br><br>
+                            
+                            <strong style="color: #a78bfa; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="mouse" style="width: 14px; height: 14px;"></i> Camera Settings</strong>
+                            <span style="margin-left: 20px;">• Camera Sensitivity: <strong style="color: #e0e6ff;">0.2</strong></span><br>
+                            <span style="margin-left: 20px;">• This is critical for consistent camera positioning</span><br>
+                            <span style="margin-left: 20px;">• Check: Settings → Camera → Mouse Sensitivity</span><br><br>
+                            
+                            <strong style="color: #a78bfa; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="type" style="width: 14px; height: 14px;"></i> Text Settings</strong>
+                            <span style="margin-left: 20px;">• Text Size: <strong style="color: #e0e6ff;">Default</strong></span><br>
+                            <span style="margin-left: 20px;">• Do not increase or decrease text size</span><br><br>
+                            
+                            <strong style="color: #ef4444; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="ban" style="width: 14px; height: 14px;"></i> Prohibited</strong>
+                            <span style="margin-left: 20px;">• <strong style="color: #e0e6ff;">No Bloxstrap</strong> - Custom fonts break button detection</span><br>
+                            <span style="margin-left: 20px;">• <strong style="color: #e0e6ff;">No Extension Fonts</strong> - Use default Roblox font only</span><br>
+                            <span style="margin-left: 20px;">• <strong style="color: #e0e6ff;">No Discord Overlay</strong> - Disable all overlays</span><br>
+                            <span style="margin-left: 20px;">• <strong style="color: #e0e6ff;">No Other Overlays</strong> - Steam, Xbox Game Bar, etc.</span><br><br>
+                            
+                            <strong style="color: #f59e0b; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i> Important Notes</strong>
+                            <span style="margin-left: 20px;">• All settings must be applied before starting the macro</span><br>
+                            <span style="margin-left: 20px;">• Changes during macro execution will cause failures</span><br>
+                            <span style="margin-left: 20px;">• Verify settings each time you launch Roblox</span>
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="settings" style="width: 16px; height: 16px;"></i> AP Settings</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            These are the in-game Anime Paradox settings that must be configured for the macro to work properly:<br><br>
+                            
+                            <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.2); margin: 12px 0;">
+                                <img src="testimages/settings1.png" style="width: 100%; max-width: 600px; border-radius: 6px; display: block; margin: 0 auto 8px auto;" alt="AP Settings 1">
+                                <img src="testimages/settings2.png" style="width: 100%; max-width: 600px; border-radius: 6px; display: block; margin: 8px auto 0 auto;" alt="AP Settings 2">
+                            </div>
+                            
+                            <strong style="color: #a78bfa; display: flex; align-items: center; gap: 6px; margin-top: 12px; margin-bottom: 4px;"><i data-lucide="check-square" style="width: 14px; height: 14px;"></i> Required Settings</strong>
+                            <span style="margin-left: 20px;">• Configure these settings exactly as shown in the images above</span><br>
+                            <span style="margin-left: 20px;">• Incorrect AP settings will cause macro navigation failures</span><br>
+                            <span style="margin-left: 20px;">• Verify these settings before each macro session</span>
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Verification Checklist</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            Before starting the macro, verify all requirements:<br><br>
+                            
+                            <span style="color: #10b981;">□ PC display resolution is 1920x1080</span><br>
+                            <span style="color: #10b981;">□ PC display scale is 100%</span><br>
+                            <span style="color: #a78bfa;">□ Roblox graphics set to Manual + Lowest</span><br>
+                            <span style="color: #a78bfa;">□ Roblox FPS capped at 60</span><br>
+                            <span style="color: #a78bfa;">□ Roblox camera sensitivity is 0.2</span><br>
+                            <span style="color: #a78bfa;">□ Roblox text size is default</span><br>
+                            <span style="color: #ef4444;">□ No Bloxstrap or custom fonts active</span><br>
+                            <span style="color: #ef4444;">□ All overlays (Discord, Steam, etc.) disabled</span><br>
+                            <span style="color: #8b5cf6;">□ AP settings configured as shown above</span><br><br>
+                            
+                            <strong style="color: #e0e6ff;">Once all items are checked, you're ready to use the macro!</strong>
+                        </p>
+                    </div>
+
+                    <!-- Getting Started Section -->
+                    <div class="guide-section hidden" id="guide-getting-started">
+                        <h3 style="color: #a78bfa; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i data-lucide="gamepad-2" style="width: 18px; height: 18px;"></i> Getting Started</h3>
+                        
+                        <h4 style="color: #c4b5fd; margin-top: 16px; margin-bottom: 8px; font-size: 15px;">Quick Start</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            1. <strong style="color: #e0e6ff;">Select Stage</strong> - Go to Stage tab, choose Mode (Story/Legend/Raids/Siege), Location, and Act<br>
+                            2. <strong style="color: #e0e6ff;">Setup Units</strong> - Go to Units tab to configure your unit placements<br>
+                            3. <strong style="color: #e0e6ff;">Launch Game</strong> - Start Roblox and enter the game lobby<br>
+                            4. <strong style="color: #e0e6ff;">Start Macro</strong> - Press <strong style="color: #a78bfa;">F1</strong> to begin automation<br>
+                            5. <strong style="color: #e0e6ff;">Stop Anytime</strong> - Press <strong style="color: #a78bfa;">F3</strong> to stop the macro
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Game Modes Explained</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 8px;">
+                            <strong style="color: #10b981;">Story Mode</strong> - Main campaign with 3 locations (Leaf Village, Planet Namek, Dark Hollow), Acts 1-6 each<br>
+                            <strong style="color: #a78bfa;">Legend Mode</strong> - Harder difficulty, Planet Namek & Dark Hollow only, Acts 1-3<br>
+                            <strong style="color: #ef4444;">Raids</strong> - Frozen Gate raid with Acts 1-3<br>
+                            <strong style="color: #3b82f6;">Siege</strong> - Blue Dungeon Siege with Act 1
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">First Time Setup</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            • Make sure Roblox is running before starting the macro<br>
+                            • The macro will automatically detect the Roblox window<br>
+                            • Keep the game window visible (not minimized) for best results<br>
+                            • Each mode/location/act has its own separate unit configuration<br>
+                            • Configurations are automatically saved when you click Save
+                        </p>
+                    </div>
+
+                    <!-- Config Setup Section -->
+                    <div class="guide-section hidden" id="guide-config-setup">
+                        <h3 style="color: #a78bfa; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i data-lucide="settings" style="width: 18px; height: 18px;"></i> Creating Your Configuration</h3>
+                        
+                        <h4 style="color: #c4b5fd; margin-top: 16px; margin-bottom: 8px; font-size: 15px;">Step 1: Map Preview Images</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #10b981;">Pre-taken Images Available</strong><br>
+                            • Default map preview images are already included for all Story mode locations<br>
+                            • These images show the standard camera view for each stage<br>
+                            • Simply select your mode, location, and act to see the preview<br><br>
+                            
+                            <strong style="color: #a78bfa;">Take Your Own Screenshot (Optional)</strong><br>
+                            If you prefer a custom camera angle or need images for Raids/Siege:<br>
+                            1. Go to the Units tab in the macro<br>
+                            2. Start the game and position your camera where units will be placed<br>
+                            3. Press <strong style="color: #a78bfa;">F4</strong> to capture a screenshot<br>
+                            4. The screenshot will replace the default and appear in the map preview area<br>
+                            5. This helps you visualize unit placements with your preferred view
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Step 2: Set Unit Coordinates</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #e0e6ff;">Method 1: Coordinate Picker (Recommended)</strong><br>
+                            1. Find the unit you want to configure<br>
+                            2. Click the <strong style="color: #a78bfa;"><i data-lucide="map-pin" style="width: 12px; height: 12px; display: inline-block;"></i> Pick</strong> button<br>
+                            3. A window opens showing your map screenshot (default or custom)<br>
+                            4. Click on the exact spot where you want the unit placed<br>
+                            5. Coordinates are automatically saved<br><br>
+                            
+                            <strong style="color: #e0e6ff;">Method 2: Manual Entry</strong><br>
+                            1. Hover your mouse over the desired placement spot in-game<br>
+                            2. Note the X and Y pixel coordinates<br>
+                            3. Manually enter them in the X/Y fields<br>
+                            4. Click Save to store the configuration
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Step 3: Configure Unit Properties</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            For each unit you want to place:<br>
+                            1. <strong style="color: #e0e6ff;">Enable</strong> - Check the "On" checkbox<br>
+                            2. <strong style="color: #e0e6ff;">Set Slot</strong> - Choose hotkey slot (1-6) where the unit is equipped<br>
+                            3. <strong style="color: #e0e6ff;">Set Coordinates</strong> - Use coordinate picker or enter manually<br>
+                            4. <strong style="color: #e0e6ff;">Optional: Set Upgrade</strong> - Target level if you want the unit upgraded<br>
+                            5. <strong style="color: #e0e6ff;">Optional: Add Note</strong> - Write unit name for easy reference
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Step 4: Test Your Configuration</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            1. Click <strong style="color: #a78bfa;"><i data-lucide="save" style="width: 12px; height: 12px; display: inline-block;"></i> Save</strong> to save your configuration<br>
+                            2. Start the game and press <strong style="color: #a78bfa;">F1</strong><br>
+                            3. Watch the status log for any errors<br>
+                            4. Observe if units are placed correctly in-game<br>
+                            5. Adjust coordinates if placements are off<br>
+                            6. Press <strong style="color: #a78bfa;">F3</strong> to stop and make adjustments
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Configuration Best Practices</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            ✓ Start with 2-3 units and test before adding more<br>
+                            ✓ Use the coordinate picker for precision<br>
+                            ✓ Save frequently to avoid losing progress<br>
+                            ✓ Use Notes to identify which unit is which<br>
+                            ✓ Create separate configs for different strategies<br>
+                            ✓ Test in a practice run before AFK farming
+                        </p>
+                    </div>
+
+                    <!-- Unit Configuration Section -->
+                    <div class="guide-section hidden" id="guide-unit-config">
+                        <h3 style="color: #a78bfa; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i data-lucide="swords" style="width: 18px; height: 18px;"></i> Unit Configuration Details</h3>
+                        
+                        <h4 style="color: #c4b5fd; margin-top: 16px; margin-bottom: 8px; font-size: 15px;">Unit Properties Explained</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #10b981;">On (Enabled)</strong><br>
+                            • Checkbox to enable/disable this unit<br>
+                            • Disabled units are skipped during macro execution<br>
+                            • Useful for temporarily testing different setups<br><br>
+
+                            <strong style="color: #a78bfa;">Early (PlaceBeforeYes)</strong><br>
+                            • Places unit BEFORE clicking the start button<br>
+                            • Essential for farming units that need early placement<br>
+                            • Use for units that generate resources from the start<br>
+                            • Camera positioning happens before early units are placed<br><br>
+
+                            <strong style="color: #f59e0b;">Auto⬆ (AutoUpgrade)</strong><br>
+                            • Automatically clicks the Auto Upgrade button in the unit UI<br>
+                            • Continues upgrading until target level is reached<br>
+                            • Set Upgrade level to Max for continuous upgrading<br>
+                            • More reliable than manual T key pressing<br><br>
+
+                            <strong style="color: #3b82f6;">Slot</strong><br>
+                            • Hotkey slot number (1-6) where unit is equipped<br>
+                            • Set to 0 for units that need clicking to place/upgrade<br>
+                            • Slot 0 is also used when upgrading existing units<br>
+                            • Make sure your in-game hotkeys match these numbers<br><br>
+
+                            <strong style="color: #ef4444;">Upgrade</strong><br>
+                            • Target upgrade level (0 = no upgrade, 1-5 = specific level, Max = max level)<br>
+                            • Combined with AutoUpgrade, clicks auto upgrade button until level reached<br>
+                            • Without AutoUpgrade, will attempt single upgrade<br>
+                            • Max setting continues upgrading indefinitely<br><br>
+
+                            <strong style="color: #e0e6ff;">X / Y Coordinates</strong><br>
+                            • Pixel coordinates for unit placement on screen<br>
+                            • Must be accurate for proper placement<br>
+                            • Use coordinate picker for best results<br>
+                            • Coordinates are relative to your screen resolution<br><br>
+
+                            <strong style="color: #94a3b8;">Note</strong><br>
+                            • Optional text field for your reference<br>
+                            • Write unit name, strategy notes, or reminders<br>
+                            • Helps organize complex configurations
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Common Unit Setups</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #10b981;">Farming Unit (Early Placement)</strong><br>
+                            • On: ✓ | Early: ✓ | Auto⬆: ✗ | Slot: 1-6 | Upgrade: 0<br>
+                            • Places farm unit before game starts<br><br>
+
+                            <strong style="color: #a78bfa;">DPS Unit (Auto Upgrade)</strong><br>
+                            • On: ✓ | Early: ✗ | Auto⬆: ✓ | Slot: 1-6 | Upgrade: Max<br>
+                            • Places and continuously upgrades damage dealer<br><br>
+
+                            <strong style="color: #f59e0b;">Support Unit (No Upgrade)</strong><br>
+                            • On: ✓ | Early: ✗ | Auto⬆: ✗ | Slot: 1-6 | Upgrade: 0<br>
+                            • Places support unit without upgrading<br><br>
+
+                            <strong style="color: #3b82f6;">Click-to-Place Unit</strong><br>
+                            • On: ✓ | Early: ✗ | Auto⬆: ✗ | Slot: 0 | Upgrade: 0<br>
+                            • Clicks coordinates to place unit (no hotkey used)
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="clipboard" style="width: 16px; height: 16px;"></i> Copy & Paste Units</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            Copy/Paste allows you to duplicate unit configurations:<br>
+                            1. Find the unit with settings you want to copy<br>
+                            2. Click the <strong style="color: #a78bfa;"><i data-lucide="copy" style="width: 12px; height: 12px; display: inline-block;"></i></strong> (Copy) button<br>
+                            3. Find the destination unit<br>
+                            4. Click the <strong style="color: #a78bfa;"><i data-lucide="clipboard-paste" style="width: 12px; height: 12px; display: inline-block;"></i></strong> (Paste) button<br>
+                            5. All properties except Index are copied<br><br>
+
+                            <strong style="color: #e0e6ff;">Use Cases:</strong><br>
+                            • Copying a unit to multiple locations with same settings<br>
+                            • Creating templates for similar unit types<br>
+                            • Quickly setting up mirror strategies
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i> Clear All Units</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            The Clear All button resets configuration to defaults:<br>
+                            • All units disabled (On = ✗)<br>
+                            • All slots set to 0<br>
+                            • All coordinates cleared<br>
+                            • All checkboxes unchecked<br>
+                            • Use this to start fresh or troubleshoot issues
+                        </p>
+                    </div>
+
+                    <!-- Advanced Section -->
+                    <div class="guide-section hidden" id="guide-advanced">
+                        <h3 style="color: #a78bfa; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i data-lucide="wrench" style="width: 18px; height: 18px;"></i> Advanced Features</h3>
+                        
+                        <h4 style="color: #c4b5fd; margin-top: 16px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="settings" style="width: 16px; height: 16px;"></i> Settings & Customization</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #e0e6ff;">Custom Keybinds</strong><br>
+                            • Go to Settings tab<br>
+                            • Click "Set" next to Start or Stop keybind<br>
+                            • Press your desired key<br>
+                            • Click "Apply Keybinds" to save<br>
+                            • Avoid using common game keys
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="bar-chart" style="width: 16px; height: 16px;"></i> Reading the Status Log</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            The status log shows real-time macro activity:<br><br>
+                            
+                            <span style="color: #10b981; display: flex; align-items: center; gap: 6px;"><i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> Green Messages</span><br>
+                            • Successful actions (button found, unit placed, etc.)<br>
+                            • Navigation steps completed<br>
+                            • Phase transitions<br><br>
+
+                            <span style="color: #ef4444; display: flex; align-items: center; gap: 6px;"><i data-lucide="x-circle" style="width: 14px; height: 14px;"></i> Red Messages</span><br>
+                            • Failed actions (button not found, timeout, etc.)<br>
+                            • Critical errors that stop the macro<br>
+                            • Requires attention/fixing<br><br>
+
+                            <span style="color: #f59e0b; display: flex; align-items: center; gap: 6px;"><i data-lucide="alert-triangle" style="width: 14px; height: 14px;"></i> Yellow Messages</span><br>
+                            • Warnings or important information<br>
+                            • Non-critical issues<br>
+                            • Fallback actions taken<br><br>
+
+                            <span style="color: #94a3b8;">Gray Messages</span><br>
+                            • General status updates<br>
+                            • Progress indicators<br>
+                            • Phase announcements
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="target" style="width: 16px; height: 16px;"></i> Positioning Strategies</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            The macro automatically positions your character in each stage:<br><br>
+
+                            <strong style="color: #10b981;">Leaf Village</strong><br>
+                            • Moves right (A) for 5 seconds<br>
+                            • Moves forward (W) for 2 seconds<br><br>
+
+                            <strong style="color: #a78bfa;">Planet Namek</strong><br>
+                            • Moves down (S) for 0.8 seconds<br>
+                            • Moves left (A) for 0.2 seconds<br><br>
+
+                            <strong style="color: #ef4444;">Dark Hollow</strong><br>
+                            • Moves left (A) for 0.3 seconds<br><br>
+
+                            <strong style="color: #f59e0b;">Raids</strong><br>
+                            • Walks forward (W) for 3 seconds<br>
+                            • Walks left (A) for 3 seconds<br>
+                            • Continues forward until Frozen Gate detected<br><br>
+
+                            <strong style="color: #3b82f6;">Siege</strong><br>
+                            • Walks forward (W) for 3 seconds<br>
+                            • Holds right (D) until Blue Dungeon detected
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="repeat" style="width: 16px; height: 16px;"></i> Macro Replay System</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            After first game completion:<br>
+                            • Macro automatically clicks Replay button<br>
+                            • Skips camera zoom and O key hold on replay<br>
+                            • Skips navigation (Areas, Story buttons)<br>
+                            • Maintains positioning from first run<br>
+                            • Continues looping until you press F3
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px;"><i data-lucide="lightbulb" style="width: 16px; height: 16px;"></i> Pro Tips</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            • Always test configs before AFK farming<br>
+                            • Use coordinate picker for pixel-perfect placement<br>
+                            • Save after every change<br>
+                            • Use Notes to document your strategy<br>
+                            • Create different configs for different team comps<br>
+                            • Monitor the first few runs to ensure stability<br>
+                            • Keep game window visible (not minimized)<br>
+                            • Don't alt-tab during macro execution
+                        </p>
+                    </div>
+
+                    <!-- Troubleshooting Section -->
+                    <div class="guide-section hidden" id="guide-troubleshooting">
+                        <h3 style="color: #a78bfa; margin-bottom: 12px; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i data-lucide="search" style="width: 18px; height: 18px;"></i> Troubleshooting & FAQ</h3>
+                        
+                        <h4 style="color: #c4b5fd; margin-top: 16px; margin-bottom: 8px; font-size: 15px;">Common Issues</h4>
+                        
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #ef4444;">Macro won't start</strong><br>
+                            ✓ Make sure Roblox is running<br>
+                            ✓ Check if game window is visible (not minimized)<br>
+                            ✓ Verify you pressed F1 (or your custom start key)<br>
+                            ✓ Restart the macro application<br><br>
+
+                            <strong style="color: #ef4444;">Units not placing correctly</strong><br>
+                            ✓ Verify coordinates are accurate<br>
+                            ✓ Use coordinate picker tool instead of manual entry<br>
+                            ✓ Ensure unit is enabled (On checkbox)<br>
+                            ✓ Check that Slot number matches in-game hotkey<br>
+                            ✓ Make sure you have enough currency to place unit<br><br>
+
+                            <strong style="color: #ef4444;">Auto upgrade not working</strong><br>
+                            ✓ Enable Auto⬆ checkbox<br>
+                            ✓ Set Upgrade target (1-5 or Max)<br>
+                            ✓ Verify unit is already placed<br>
+                            ✓ Ensure you have enough currency to upgrade<br>
+                            ✓ Check that the unit UI auto upgrade button is visible<br><br>
+
+                            <strong style="color: #ef4444;">Navigation fails</strong><br>
+                            ✓ Check that button images exist in buttons folder<br>
+                            ✓ Ensure Roblox window is fully visible<br>
+                            ✓ Try running in windowed mode (not fullscreen)<br>
+                            ✓ Check status log for specific failed button<br><br>
+
+                            <strong style="color: #ef4444;">Macro stops unexpectedly</strong><br>
+                            ✓ Check status log for error messages<br>
+                            ✓ Verify game didn't disconnect<br>
+                            ✓ Ensure no popup dialogs are blocking the game<br>
+                            ✓ Check if game updated (may need new button images)<br><br>
+
+                            <strong style="color: #ef4444;">Screenshot (F4) not working</strong><br>
+                            ✓ Make sure you're in the Units tab<br>
+                            ✓ Click into the game window first<br>
+                            ✓ Check that starting image folders exist<br>
+                            ✓ Verify you have write permissions<br><br>
+
+                            <strong style="color: #ef4444;">Coordinate picker shows blank</strong><br>
+                            ✓ Take a screenshot first with F4<br>
+                            ✓ Make sure screenshot saved successfully<br>
+                            ✓ Check Settings/[Mode]/[Location] folder for image<br>
+                            ✓ Try taking screenshot again
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Performance Tips</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            • Run Roblox in windowed mode for better detection<br>
+                            • Don't minimize or cover the game window<br>
+                            • Close unnecessary background applications<br>
+                            • Ensure stable internet connection<br>
+                            • Avoid changing game graphics settings mid-run<br>
+                            • Keep macro application running (don't minimize)
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">FAQ</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            <strong style="color: #e0e6ff;">Q: Can I use multiple configs for the same stage?</strong><br>
+                            A: Each Mode/Location/Act has one config. You can manually backup configs by copying the JSON files from the Settings folder.<br><br>
+
+                            <strong style="color: #e0e6ff;">Q: What's the difference between Slot 0 and Slot 1-6?</strong><br>
+                            A: Slots 1-6 use hotkeys to place units. Slot 0 means clicking the unit on screen to place/upgrade it.<br><br>
+
+                            <strong style="color: #e0e6ff;">Q: How many units can I configure?</strong><br>
+                            A: Up to 30 units per configuration. Enable only the ones you need.<br><br>
+
+                            <strong style="color: #e0e6ff;">Q: Can I pause the macro?</strong><br>
+                            A: Press F3 to stop the macro. Resume by pressing F1 (it will start from the beginning).<br><br>
+
+                            <strong style="color: #e0e6ff;">Q: Does the macro work on all screen resolutions?</strong><br>
+                            A: Coordinates are absolute pixels, so configs are resolution-specific. Create separate configs for different resolutions.<br><br>
+
+                            <strong style="color: #e0e6ff;">Q: What if a new update changes the game?</strong><br>
+                            A: You may need to retake screenshots and update coordinates. Button images may also need updating.<br><br>
+
+                            <strong style="color: #e0e6ff;">Q: Is there a way to debug my config?</strong><br>
+                            A: Watch the status log in real-time. Enable one unit at a time to identify problematic units.
+                        </p>
+
+                        <h4 style="color: #c4b5fd; margin-top: 20px; margin-bottom: 8px; font-size: 15px;">Getting Help</h4>
+                        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 12px;">
+                            If you're still having issues:<br>
+                            1. Check the status log for specific error messages<br>
+                            2. Try with a minimal config (1-2 units)<br>
+                            3. Verify button images exist in buttons folder<br>
+                            4. Test coordinate picker tool separately<br>
+                            5. Try clearing and recreating your config
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Panel - Game Overlay -->
+    <div class="side-panel">
+        <div class="game-container">
+            <div class="game-container-header">
+                <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="gamepad-2" style="width: 18px; height: 18px;"></i> Game View</h3>
+                <div class="game-container-controls">
+                    <button onclick="attachRoblox()">Attach Roblox</button>
+                    <button onclick="detachRoblox()">Detach</button>
+                </div>
+            </div>
+            <div class="game-embed-area" id="game-embed">
+                <div class="status-indicator" id="roblox-status">Not Attached</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isRunning = false;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Show selected panel
+            document.getElementById('tab-' + tabName).classList.add('active');
+            // Activate button
+            event.target.classList.add('active');
+            // Reinitialize Lucide icons
+            lucide.createIcons();
+        }
+
+        function switchGuideTab(sectionName) {
+            // Hide all guide sections
+            document.querySelectorAll('.guide-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            // Deactivate all guide tab buttons
+            document.querySelectorAll('.guide-tab-btn').forEach(btn => {
+                btn.style.background = 'transparent';
+                btn.style.color = '#94a3b8';
+                btn.style.border = '1px solid rgba(139, 92, 246, 0.2)';
+            });
+            // Show selected guide section
+            document.getElementById('guide-' + sectionName).classList.remove('hidden');
+            // Activate clicked button
+            event.target.style.background = 'rgba(139, 92, 246, 0.2)';
+            event.target.style.color = '#e0e6ff';
+            event.target.style.border = '1px solid rgba(139, 92, 246, 0.4)';
+            // Reinitialize Lucide icons for newly shown content
+            lucide.createIcons();
+        }
+
+        function updateModeVisibility() {
+            const mode = document.getElementById('mode').value;
+            const storyOptions = document.getElementById('story-options');
+            const raidOptions = document.getElementById('raid-options');
+            const siegeOptions = document.getElementById('siege-options');
+            const challengeOptions = document.getElementById('challenge-options');
+            const locationSelect = document.getElementById('location');
+            const actSelect = document.getElementById('act');
+            
+            // Hide all mode-specific options first
+            storyOptions.classList.add('hidden');
+            raidOptions.classList.add('hidden');
+            siegeOptions.classList.add('hidden');
+            challengeOptions.classList.add('hidden');
+            
+            if (mode === 'Story' || mode === 'Legend') {
+                storyOptions.classList.remove('hidden');
+                
+                // For Legend mode, restrict locations and acts
+                if (mode === 'Legend') {
+                    // Disable Leaf Village for Legend
+                    Array.from(locationSelect.options).forEach(opt => {
+                        opt.disabled = (opt.value === 'Leaf Village');
+                    });
+                    // If Leaf Village is selected, switch to Planet Namek
+                    if (locationSelect.value === 'Leaf Village') {
+                        locationSelect.value = 'Planet Namek';
+                    }
+                    // For Legend, only Acts 1-3 available
+                    Array.from(actSelect.options).forEach(opt => {
+                        const actNum = parseInt(opt.value.replace('Act ', ''));
+                        opt.disabled = (actNum > 3);
+                    });
+                    // If Act > 3 is selected, switch to Act 1
+                    const currentAct = parseInt(actSelect.value.replace('Act ', ''));
+                    if (currentAct > 3) {
+                        actSelect.value = 'Act 1';
+                    }
+                } else {
+                    // Story mode - enable all options
+                    Array.from(locationSelect.options).forEach(opt => {
+                        opt.disabled = false;
+                    });
+                    Array.from(actSelect.options).forEach(opt => {
+                        opt.disabled = false;
+                    });
+                }
+            } else if (mode === 'Raids') {
+                raidOptions.classList.remove('hidden');
+            } else if (mode === 'Siege') {
+                siegeOptions.classList.remove('hidden');
+            } else if (mode === 'Auto-Challenges') {
+                challengeOptions.classList.remove('hidden');
+            }
+        }
+        
+        function updateRaidActs() {
+            // Frozen Gate has 3 acts
+            // Future raids can be added here
+        }
+        
+        function updateSiegeActs() {
+            // Blue Dungeon has 1 act
+            // Future sieges can be added here
+        }
+        
+        async function saveStoryConfig() {
+            try {
+                const mode = document.getElementById('mode').value;
+                let location, act;
+                const nightmare = document.getElementById('nightmare').checked;
+                
+                if (mode === 'Raids') {
+                    location = document.getElementById('raid-location').value;
+                    act = document.getElementById('raid-act').value;
+                } else if (mode === 'Siege') {
+                    location = document.getElementById('siege-location').value;
+                    act = document.getElementById('siege-act').value;
+                } else if (mode === 'Auto-Challenges') {
+                    location = document.getElementById('challenge-location').value;
+                    act = 'Act 1';  // Challenges only have 1 config per location
+                } else {
+                    location = document.getElementById('location').value;
+                    act = document.getElementById('act').value;
+                }
+                
+                await pywebview.api.update_story_config(mode, location, act, nightmare);
+                console.log('Story config updated:', mode, location, act, 'nightmare:', nightmare);
+            } catch (error) {
+                console.error('Error updating story config:', error);
+            }
+        }
+
+        // Roblox Window Attachment
+        async function attachRoblox() {
+            try {
+                const result = await pywebview.api.attach_roblox();
+                const statusEl = document.getElementById('roblox-status');
+                if (result.success) {
+                    statusEl.textContent = 'Attached';
+                    statusEl.classList.add('attached');
+                    addStatus('Roblox window attached!', 'success');
+                } else {
+                    statusEl.textContent = result.message || 'Failed';
+                    statusEl.classList.remove('attached');
+                    addStatus(result.message, 'error');
+                }
+            } catch (error) {
+                addStatus('Error attaching Roblox: ' + error, 'error');
+            }
+        }
+
+        async function detachRoblox() {
+            try {
+                await pywebview.api.detach_roblox();
+                const statusEl = document.getElementById('roblox-status');
+                statusEl.textContent = 'Not Attached';
+                statusEl.classList.remove('attached');
+                addStatus('Roblox window detached', 'warning');
+            } catch (error) {
+                addStatus('Error detaching Roblox: ' + error, 'error');
+            }
+        }
+
+        async function captureKey(type) {
+            const input = document.getElementById(type + '-key');
+            input.value = 'Press any key...';
+            input.style.background = 'rgba(139, 92, 246, 0.2)';
+            
+            try {
+                const key = await pywebview.api.capture_keybind(type);
+                input.value = key.toUpperCase();
+                input.style.background = '';
+            } catch (error) {
+                console.error('Error capturing key:', error);
+                input.value = type === 'start' ? 'F1' : 'F3';
+                input.style.background = '';
+            }
+        }
+
+        async function applyKeybinds() {
+            const startKey = document.getElementById('start-key').value;
+            const stopKey = document.getElementById('stop-key').value;
+            
+            try {
+                await pywebview.api.apply_keybinds(startKey, stopKey);
+                addStatus('Hotkeys registered: Start=' + startKey + ', Stop=' + stopKey, 'success');
+            } catch (error) {
+                addStatus('Failed to register hotkeys: ' + error, 'error');
+            }
+        }
+
+        async function saveWebhook() {
+            const url = document.getElementById('discord-webhook-url').value.trim();
+            try {
+                await pywebview.api.save_webhook_url(url);
+                addStatus(url ? 'Webhook URL saved!' : 'Webhook URL cleared', 'success');
+            } catch (error) {
+                addStatus('Failed to save webhook: ' + error, 'error');
+            }
+        }
+
+        async function testWebhook() {
+            const url = document.getElementById('discord-webhook-url').value.trim();
+            if (!url) {
+                addStatus('Please enter a webhook URL first', 'error');
+                return;
+            }
+            try {
+                addStatus('Sending test message...', '');
+                const result = await pywebview.api.test_webhook();
+                if (result) {
+                    addStatus('Test message sent successfully!', 'success');
+                } else {
+                    addStatus('Failed to send test message', 'error');
+                }
+            } catch (error) {
+                addStatus('Webhook test failed: ' + error, 'error');
+            }
+        }
+
+        async function resetStats() {
+            if (!confirm('Reset all win/loss stats?')) return;
+            try {
+                await pywebview.api.reset_stats();
+                document.getElementById('stats-wins').textContent = '0';
+                document.getElementById('stats-losses').textContent = '0';
+                document.getElementById('stats-ratio').textContent = '0%';
+                addStatus('Stats reset', 'success');
+            } catch (error) {
+                addStatus('Failed to reset stats: ' + error, 'error');
+            }
+        }
+
+        function updateStatsDisplay(wins, losses) {
+            document.getElementById('stats-wins').textContent = wins;
+            document.getElementById('stats-losses').textContent = losses;
+            const total = wins + losses;
+            const ratio = total > 0 ? Math.round((wins / total) * 100) : 0;
+            document.getElementById('stats-ratio').textContent = ratio + '%';
+        }
+
+        async function loadWebhookSettings() {
+            try {
+                const config = await pywebview.api.get_config();
+                document.getElementById('discord-webhook-url').value = config.discord_webhook_url || '';
+                document.getElementById('private-server-link').value = config.private_server_link || '';
+                updateStatsDisplay(config.stats_wins || 0, config.stats_losses || 0);
+            } catch (error) {
+                console.error('Error loading webhook settings:', error);
+            }
+        }
+
+        async function savePrivateServer() {
+            const link = document.getElementById('private-server-link').value.trim();
+            try {
+                await pywebview.api.save_private_server_link(link);
+                addStatus(link ? 'Private server link saved!' : 'Private server link cleared', 'success');
+            } catch (error) {
+                addStatus('Failed to save private server link: ' + error, 'error');
+            }
+        }
+
+        async function loadStoryConfig() {
+            try {
+                const config = await pywebview.api.get_config();
+                if (config.mode) {
+                    document.getElementById('mode').value = config.mode;
+                }
+                if (config.location) {
+                    document.getElementById('location').value = config.location;
+                }
+                if (config.act) {
+                    document.getElementById('act').value = config.act;
+                }
+                // Load challenge location if available
+                if (config.challenge_location) {
+                    document.getElementById('challenge-location').value = config.challenge_location;
+                }
+                document.getElementById('nightmare').checked = config.nightmare || false;
+                // Load T-press delay setting if present
+                try {
+                    const tdelay = (config.t_press_delay !== undefined) ? parseFloat(config.t_press_delay) : 0.08;
+                    document.getElementById('t-press-delay').value = isNaN(tdelay) ? 0.08 : tdelay;
+                } catch (e) {
+                    document.getElementById('t-press-delay').value = 0.08;
+                }
+                updateModeVisibility();
+                console.log('Loaded story config:', config.mode, config.location, config.act, 'nightmare:', config.nightmare);
+            } catch (error) {
+                console.error('Error loading story config:', error);
+            }
+        }
+
+        async function applyTPressDelay() {
+            const input = document.getElementById('t-press-delay');
+            const val = parseFloat(input.value);
+            if (isNaN(val) || val < 0) {
+                addStatus('Invalid T-press delay value', 'error');
+                return;
+            }
+            try {
+                const ok = await pywebview.api.update_t_press_delay(val);
+                if (ok) {
+                    addStatus('T-press delay updated: ' + val + 's', 'success');
+                } else {
+                    addStatus('Failed to update T-press delay', 'error');
+                }
+            } catch (err) {
+                addStatus('Error updating T-press delay: ' + err, 'error');
+            }
+        }
+
+        function addStatus(message, type = '') {
+            const statusLog = document.getElementById('status-log');
+            const line = document.createElement('div');
+            line.className = 'status-line ' + type;
+            
+            if (isRunning && type === '') {
+                line.innerHTML = '<span class="running-indicator"></span>' + message;
+            } else {
+                line.textContent = message;
+            }
+            
+            statusLog.appendChild(line);
+            statusLog.scrollTop = statusLog.scrollHeight;
+        }
+
+        // Unit Configuration Functions
+        let currentUnitConfig = null;
+
+        async function loadUnitConfig() {
+            try {
+                const mode = document.getElementById('mode').value;
+                let location, act;
+                
+                if (mode === 'Raids') {
+                    location = document.getElementById('raid-location').value;
+                    act = document.getElementById('raid-act').value;
+                } else if (mode === 'Siege') {
+                    location = document.getElementById('siege-location').value;
+                    act = document.getElementById('siege-act').value;
+                } else if (mode === 'Auto-Challenges') {
+                    location = document.getElementById('challenge-location').value;
+                    act = 'Act 1';  // Challenges only have 1 config per location
+                } else {
+                    const locationEl = document.getElementById('location');
+                    const actEl = document.getElementById('act');
+                    location = locationEl ? locationEl.value : 'Leaf Village';
+                    act = actEl ? actEl.value : 'Act 1';
+                }
+                
+                // Update display
+                const displayEl = document.getElementById('unit-config-display');
+                if (displayEl) {
+                    if (mode === 'Auto-Challenges') {
+                        displayEl.textContent = `${location} - Challenge`;
+                    } else {
+                        displayEl.textContent = `${location} - ${act}`;
+                    }
+                }
+                
+                const config = await pywebview.api.load_unit_config(location, act, mode);
+                currentUnitConfig = config;
+                renderUnits(config.Units);
+                await loadMapPreview(location, act, mode);
+                addStatus(`Loaded unit config for ${location} - ${act}`, 'success');
+            } catch (error) {
+                addStatus('Error loading unit config: ' + error, 'error');
+                console.error('Unit config error:', error);
+            }
+        }
+
+        async function loadMapPreview(location, act, mode) {
+            try {
+                const result = await pywebview.api.get_map_preview_path(location, act, mode);
+                const img = document.getElementById('map-preview-img');
+                const placeholder = document.getElementById('map-placeholder');
+                const dotsContainer = document.getElementById('unit-dots-container');
+                
+                console.log('Map preview result:', result);
+                
+                if (result && result.success && result.path) {
+                    // Set up load handler first
+                    img.onload = async function() {
+                        console.log('Image loaded successfully');
+                        await renderUnitDots();
+                    };
+                    
+                    img.onerror = function(e) {
+                        console.error('Image failed to load:', e);
+                        img.style.display = 'none';
+                        placeholder.style.display = 'block';
+                        placeholder.textContent = '❌ Failed to load map image';
+                    };
+                    
+                    // Load the image (base64 data URL)
+                    img.src = result.path;
+                    img.style.display = 'block';
+                    placeholder.style.display = 'none';
+                } else {
+                    console.log('No map preview available');
+                    img.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    dotsContainer.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error loading map preview:', error);
+            }
+        }
+
+        async function renderUnitDots() {
+            const dotsContainer = document.getElementById('unit-dots-container');
+            const img = document.getElementById('map-preview-img');
+            dotsContainer.innerHTML = '';
+            
+            console.log('renderUnitDots called', {hasConfig: !!currentUnitConfig, imgDisplay: img?.style.display});
+            
+            if (!currentUnitConfig || !img || img.style.display === 'none') {
+                console.log('Cannot render dots: missing config or image not visible');
+                return;
+            }
+            
+            // Get the image display dimensions
+            const imgRect = img.getBoundingClientRect();
+            console.log('Image rect:', imgRect);
+            
+            // Use saved window info from config if available, otherwise try current Roblox window
+            let windowInfo = currentUnitConfig.WindowInfo || null;
+            console.log('Window info from config:', windowInfo);
+            
+            if (!windowInfo) {
+                try {
+                    windowInfo = await pywebview.api.get_roblox_window_info();
+                } catch (e) {
+                    console.log('Could not get window info, using defaults');
+                    windowInfo = { x: 0, y: 0, width: 960, height: 600 };
+                }
+            }
+            
+            // Scale factors from screen coordinates to preview image
+            const scaleX = imgRect.width / windowInfo.width;
+            const scaleY = imgRect.height / windowInfo.height;
+            
+            console.log('Scale factors:', {scaleX, scaleY, windowInfo});
+            
+            let dotCount = 0;
+            currentUnitConfig.Units.forEach((unit, idx) => {
+                const screenX = parseInt(unit.X) || 0;
+                const screenY = parseInt(unit.Y) || 0;
+                
+                if (screenX === 0 && screenY === 0) return; // Skip units without coordinates
+                
+                // Convert absolute screen coordinates to relative position within the Roblox window
+                const relativeX = screenX - windowInfo.x;
+                const relativeY = screenY - windowInfo.y;
+                
+                // Scale to preview image size
+                const dotX = relativeX * scaleX;
+                const dotY = relativeY * scaleY;
+                
+                console.log(`Unit ${unit.Index}: screen(${screenX},${screenY}) -> relative(${relativeX},${relativeY}) -> dot(${dotX},${dotY})`);
+                
+                // Skip if outside bounds
+                if (dotX < 0 || dotX > imgRect.width || dotY < 0 || dotY > imgRect.height) {
+                    console.log(`Unit ${unit.Index} outside bounds, skipping`);
+                    return;
+                }
+                
+                // Create the dot element
+                const dot = document.createElement('div');
+                dot.className = 'unit-dot';
+                dot.style.left = `${dotX}px`;
+                dot.style.top = `${dotY}px`;
+                dot.title = `Unit ${unit.Index}: (${screenX}, ${screenY})${unit.Note ? ' - ' + unit.Note : ''}`;
+                dot.onclick = () => {
+                    // Scroll to this unit in the list
+                    const unitCard = document.querySelector(`#unit-${idx}-enabled`)?.closest('.unit-card');
+                    if (unitCard) unitCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                };
+                
+                // Create the label
+                const label = document.createElement('div');
+                label.className = 'unit-dot-label';
+                label.style.left = `${dotX}px`;
+                label.style.top = `${dotY}px`;
+                label.textContent = `U${unit.Index}`;
+                
+                dotsContainer.appendChild(dot);
+                dotsContainer.appendChild(label);
+                dotCount++;
+            });
+            
+            console.log(`Rendered ${dotCount} dots`);
+        }
+
+        function renderUnits(units) {
+            const container = document.getElementById('units-container');
+            container.innerHTML = '';
+            
+            units.forEach((unit, idx) => {
+                const unitDiv = document.createElement('div');
+                unitDiv.className = 'unit-card';
+                unitDiv.innerHTML = `
+                    <div class="unit-header">
+                        <span class="unit-index">Unit ${unit.Index}</span>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" id="unit-${idx}-enabled" 
+                                   ${unit.Enabled ? 'checked' : ''}
+                                   onchange="updateUnitEnabled(${idx}, this.checked)"
+                                   style="width: 14px; height: 14px;">
+                            <span style="font-size: 11px; color: #94a3b8;">On</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" id="unit-${idx}-placebeforeyes"
+                                   ${unit.PlaceBeforeYes ? 'checked' : ''}
+                                   onchange="updateUnitField(${idx}, 'PlaceBeforeYes', this.checked)"
+                                   style="width: 14px; height: 14px;">
+                            <span style="font-size: 11px; color: #94a3b8;">Early</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" id="unit-${idx}-autoupgrade"
+                                   ${unit.AutoUpgrade ? 'checked' : ''}
+                                   onchange="updateUnitField(${idx}, 'AutoUpgrade', this.checked)"
+                                   style="width: 14px; height: 14px;">
+                            <span style="font-size: 11px; color: #94a3b8;">Auto⬆</span>
+                        </label>
+                        <button onclick="copyUnit(${idx})" style="padding: 3px 6px; font-size: 10px; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 4px; color: #c4b5fd; cursor: pointer; margin-left: auto; display: flex; align-items: center; gap: 4px;"><i data-lucide="copy" style="width: 12px; height: 12px;"></i></button>
+                        <button onclick="pasteUnit(${idx})" style="padding: 3px 6px; font-size: 10px; background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; color: #86efac; cursor: pointer; display: flex; align-items: center; gap: 4px;"><i data-lucide="clipboard-paste" style="width: 12px; height: 12px;"></i></button>
+                    </div>
+                    <div class="unit-fields">
+                        <div class="unit-field">
+                            <label>Slot</label>
+                            <select id="unit-${idx}-slot" onchange="updateUnitField(${idx}, 'Slot', this.value)">
+                                ${[0,1,2,3,4,5,6].map(n => 
+                                    `<option value="${n}" ${unit.Slot == n ? 'selected' : ''}>${n === 0 ? '0' : n}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="unit-field">
+                            <label>Upgrade</label>
+                            <select id="unit-${idx}-upgrade" onchange="updateUnitField(${idx}, 'Upgrade', this.value)">
+                                ${[0,1,2,3,4,'Max'].map(n => 
+                                    `<option value="${n}" ${(unit.Upgrade == n || (unit.Upgrade === 'Max' && n === 'Max')) ? 'selected' : ''}>${n}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="unit-field">
+                            <label>X</label>
+                            <input type="number" id="unit-${idx}-x" value="${unit.X || 0}"
+                                   onchange="updateUnitField(${idx}, 'X', this.value)">
+                        </div>
+                        <div class="unit-field">
+                            <label>Y</label>
+                            <input type="number" id="unit-${idx}-y" value="${unit.Y || 0}"
+                                   onchange="updateUnitField(${idx}, 'Y', this.value)">
+                        </div>
+                        <div class="unit-coords">
+                            <div class="unit-field">
+                                <label>&nbsp;</label>
+                                <button class="btn-pick" onclick="openCoordinatePicker(${idx})">
+                                    <i data-lucide="map-pin" style="width: 12px; height: 12px;"></i> Pick
+                                </button>
+                            </div>
+                            <div class="unit-field" style="grid-column: span 3;">
+                                <label>Note</label>
+                                <input type="text" id="unit-${idx}-note" value="${unit.Note || ''}"
+                                       placeholder="e.g., Front line"
+                                       onchange="updateUnitField(${idx}, 'Note', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(unitDiv);
+            });
+            
+            // Initialize Lucide icons after rendering units
+            lucide.createIcons();
+        }
+
+        function updateUnitEnabled(idx, enabled) {
+            if (currentUnitConfig && currentUnitConfig.Units[idx]) {
+                currentUnitConfig.Units[idx].Enabled = enabled;
+            }
+        }
+
+        function updateUnitField(idx, field, value) {
+            if (currentUnitConfig && currentUnitConfig.Units[idx]) {
+                currentUnitConfig.Units[idx][field] = value;
+                // Re-render dots when coordinates change
+                if (field === 'X' || field === 'Y') {
+                    renderUnitDots();
+                }
+            }
+        }
+
+        // Copy/Paste unit functionality - per unit
+        let copiedUnitData = null;
+
+        function copyUnit(idx) {
+            if (currentUnitConfig && currentUnitConfig.Units[idx]) {
+                const source = currentUnitConfig.Units[idx];
+                copiedUnitData = {
+                    Enabled: source.Enabled,
+                    PlaceBeforeYes: source.PlaceBeforeYes,
+                    AutoUpgrade: source.AutoUpgrade,
+                    Slot: source.Slot,
+                    X: source.X,
+                    Y: source.Y,
+                    Upgrade: source.Upgrade,
+                    Note: source.Note
+                };
+                addStatus(`Copied Unit ${idx + 1}`, 'success');
+            }
+        }
+
+        function pasteUnit(idx) {
+            if (!copiedUnitData) {
+                addStatus('Copy a unit first!', 'warning');
+                return;
+            }
+            
+            if (currentUnitConfig && currentUnitConfig.Units[idx]) {
+                const target = currentUnitConfig.Units[idx];
+                target.Enabled = copiedUnitData.Enabled;
+                target.PlaceBeforeYes = copiedUnitData.PlaceBeforeYes;
+                target.AutoUpgrade = copiedUnitData.AutoUpgrade;
+                target.Slot = copiedUnitData.Slot;
+                target.X = copiedUnitData.X;
+                target.Y = copiedUnitData.Y;
+                target.Upgrade = copiedUnitData.Upgrade;
+                target.Note = copiedUnitData.Note;
+                
+                renderUnits(currentUnitConfig.Units);
+                addStatus(`Pasted to Unit ${idx + 1}`, 'success');
+            }
+        }
+
+        function clearUnitConfig() {
+            if (!currentUnitConfig) return;
+            
+            currentUnitConfig.Units.forEach((unit, idx) => {
+                unit.Enabled = false;
+                unit.PlaceBeforeYes = false;
+                unit.AutoUpgrade = false;
+                unit.Slot = 0;
+                unit.X = 0;
+                unit.Y = 0;
+                unit.Upgrade = 0;
+                unit.Note = '';
+            });
+            renderUnits(currentUnitConfig.Units);
+            addStatus('All units cleared to default', 'success');
+        }
+
+        async function saveUnitConfig() {
+            try {
+                const mode = document.getElementById('mode').value;
+                let location, act;
+                
+                if (mode === 'Raids') {
+                    location = document.getElementById('raid-location').value;
+                    act = document.getElementById('raid-act').value;
+                } else if (mode === 'Siege') {
+                    location = document.getElementById('siege-location').value;
+                    act = document.getElementById('siege-act').value;
+                } else {
+                    const locationEl = document.getElementById('location');
+                    const actEl = document.getElementById('act');
+                    location = locationEl ? locationEl.value : 'Leaf Village';
+                    act = actEl ? actEl.value : 'Act 1';
+                }
+                
+                await pywebview.api.save_unit_config(location, act, currentUnitConfig, mode);
+                addStatus(`Unit config saved for ${location} - ${act}!`, 'success');
+            } catch (error) {
+                addStatus('Error saving unit config: ' + error, 'error');
+                console.error(error);
+            }
+        }
+
+        async function openCoordinatePicker(unitIndex) {
+            try {
+                const mode = document.getElementById('mode').value;
+                let location, act;
+                
+                if (mode === 'Raids') {
+                    location = document.getElementById('raid-location').value;
+                    act = document.getElementById('raid-act').value;
+                } else if (mode === 'Siege') {
+                    location = document.getElementById('siege-location').value;
+                    act = document.getElementById('siege-act').value;
+                } else {
+                    const locationEl = document.getElementById('location');
+                    const actEl = document.getElementById('act');
+                    location = locationEl ? locationEl.value : 'Leaf Village';
+                    act = actEl ? actEl.value : 'Act 1';
+                }
+                
+                const actualIndex = unitIndex + 1; // Convert 0-based to 1-based
+                
+                // Save current config before opening picker
+                await saveUnitConfig();
+                
+                addStatus(`Opening coordinate picker for Unit ${actualIndex}...`, 'info');
+                
+                const result = await pywebview.api.open_coordinate_picker(mode, location, act, actualIndex);
+                
+                if (result.success && result.x !== undefined && result.y !== undefined) {
+                    // Reload the config to get updated WindowInfo and coordinates
+                    await loadUnitConfig();
+                    
+                    addStatus(`Coordinates set for Unit ${actualIndex}: (${result.x}, ${result.y})`, 'success');
+                } else {
+                    addStatus('Coordinate picker closed without selection', 'warning');
+                }
+            } catch (error) {
+                addStatus('Error opening coordinate picker: ' + error, 'error');
+                console.error(error);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('pywebviewready', async function() {
+            console.log('pywebviewready event fired');
+            await loadStoryConfig();
+            await loadWebhookSettings();
+            // Wait a bit for story config to populate
+            setTimeout(async () => {
+                await loadUnitConfig();
+            }, 100);
+            
+            // Load current version
+            loadCurrentVersion();
+            
+            // Poll for status updates
+            setInterval(async () => {
+                try {
+                    const updates = await pywebview.api.get_status_updates();
+                    updates.forEach(msg => {
+                        if (msg.toLowerCase().includes('macro started') || msg.toLowerCase().includes('start hotkey')) {
+                            isRunning = true;
+                        } else if (msg.toLowerCase().includes('macro stopped') || msg.toLowerCase().includes('stop hotkey')) {
+                            isRunning = false;
+                        }
+                        // Update stats display when webhook is sent (game completed)
+                        if (msg.toLowerCase().includes('discord webhook sent')) {
+                            loadWebhookSettings();  // Refresh stats from config
+                        }
+                        addStatus(msg);
+                    });
+                } catch (error) {
+                    console.error('Error getting status updates:', error);
+                }
+            }, 500);
+        });
+
+        // ============== Update Functions ==============
+        let pendingUpdateUrl = null;
+
+        async function loadCurrentVersion() {
+            try {
+                const result = await pywebview.api.get_version();
+                document.getElementById('current-version').textContent = 'v' + result.version;
+            } catch (error) {
+                document.getElementById('current-version').textContent = 'Unknown';
+                console.error('Error loading version:', error);
+            }
+        }
+
+        async function checkForUpdates() {
+            const btn = document.getElementById('check-update-btn');
+            const statusDiv = document.getElementById('update-status');
+            const statusText = document.getElementById('update-status-text');
+            const updateAvailable = document.getElementById('update-available');
+            const noUpdate = document.getElementById('no-update');
+            
+            // Hide previous results
+            updateAvailable.style.display = 'none';
+            noUpdate.style.display = 'none';
+            document.getElementById('update-complete').style.display = 'none';
+            document.getElementById('update-progress').style.display = 'none';
+            document.getElementById('need-extractor').style.display = 'none';
+            
+            // Show status
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Checking for updates...';
+            btn.disabled = true;
+            btn.textContent = '⏳ Checking...';
+            
+            try {
+                const result = await pywebview.api.check_for_updates();
+                
+                if (!result.success) {
+                    statusText.textContent = '❌ ' + result.message;
+                    statusText.style.color = '#ef4444';
+                    return;
+                }
+                
+                statusDiv.style.display = 'none';
+                
+                if (result.update_available) {
+                    // Show update available
+                    document.getElementById('new-version').textContent = 'v' + result.latest_version;
+                    document.getElementById('release-notes-text').textContent = result.release_notes || 'No release notes available.';
+                    pendingUpdateUrl = result.download_url;
+                    updateAvailable.style.display = 'block';
+                    addStatus(`Update available: v${result.latest_version}`, 'success');
+                } else {
+                    // No update available
+                    noUpdate.style.display = 'block';
+                    addStatus('You are running the latest version.', 'info');
+                }
+                
+            } catch (error) {
+                statusText.textContent = '❌ Error: ' + error;
+                statusText.style.color = '#ef4444';
+                console.error('Error checking for updates:', error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="search" style="width: 16px; height: 16px;"></i> Check for Updates';
+                lucide.createIcons();
+            }
+        }
+
+        async function installUpdate() {
+            if (!pendingUpdateUrl) {
+                addStatus('No update URL available', 'error');
+                return;
+            }
+            
+            const installBtn = document.getElementById('install-update-btn');
+            const updateAvailable = document.getElementById('update-available');
+            const progressDiv = document.getElementById('update-progress');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+            const completeDiv = document.getElementById('update-complete');
+            const needExtractorDiv = document.getElementById('need-extractor');
+            
+            // Hide update available, show progress
+            updateAvailable.style.display = 'none';
+            needExtractorDiv.style.display = 'none';
+            progressDiv.style.display = 'block';
+            installBtn.disabled = true;
+            
+            try {
+                // Start progress animation
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress = Math.min(progress + Math.random() * 5, 90);
+                    progressBar.style.width = progress + '%';
+                }, 500);
+                
+                addStatus('Downloading update...', 'info');
+                progressText.textContent = 'Downloading update...';
+                
+                const result = await pywebview.api.install_update(pendingUpdateUrl);
+                
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                
+                if (result.success) {
+                    progressDiv.style.display = 'none';
+                    completeDiv.style.display = 'block';
+                    addStatus(result.message, 'success');
+                } else if (result.need_extractor) {
+                    // Need to install WinRAR or 7-Zip
+                    progressDiv.style.display = 'none';
+                    needExtractorDiv.style.display = 'block';
+                    addStatus('Archive extractor required. Please install WinRAR or 7-Zip.', 'warning');
+                } else {
+                    progressDiv.style.display = 'none';
+                    progressText.textContent = '❌ ' + result.message;
+                    addStatus('Update failed: ' + result.message, 'error');
+                }
+                
+            } catch (error) {
+                progressDiv.style.display = 'none';
+                progressText.textContent = '❌ Update failed: ' + error;
+                addStatus('Update error: ' + error, 'error');
+                console.error('Error installing update:', error);
+            }
+        }
+
+        async function downloadWinRAR() {
+            const btn = document.getElementById('download-winrar-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader" style="width: 16px; height: 16px;"></i> Downloading...';
+            lucide.createIcons();
+            
+            try {
+                addStatus('Downloading WinRAR installer...', 'info');
+                const result = await pywebview.api.download_winrar();
+                
+                if (result.success) {
+                    addStatus(result.message, 'success');
+                    btn.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Installer Started';
+                    lucide.createIcons();
+                } else {
+                    addStatus('Failed: ' + result.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="download" style="width: 16px; height: 16px;"></i> Download WinRAR';
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                addStatus('Error downloading WinRAR: ' + error, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="download" style="width: 16px; height: 16px;"></i> Download WinRAR';
+                lucide.createIcons();
+            }
+        }
+
+        async function download7Zip() {
+            const btn = document.getElementById('download-7zip-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader" style="width: 16px; height: 16px;"></i> Downloading...';
+            lucide.createIcons();
+            
+            try {
+                addStatus('Downloading 7-Zip installer...', 'info');
+                const result = await pywebview.api.download_7zip();
+                
+                if (result.success) {
+                    addStatus(result.message, 'success');
+                    btn.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Installer Started';
+                    lucide.createIcons();
+                } else {
+                    addStatus('Failed: ' + result.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="download" style="width: 16px; height: 16px;"></i> Download 7-Zip';
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                addStatus('Error downloading 7-Zip: ' + error, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="download" style="width: 16px; height: 16px;"></i> Download 7-Zip';
+                lucide.createIcons();
+            }
+        }
+
+        async function restartApp() {
+            try {
+                addStatus('Restarting application...', 'info');
+                await pywebview.api.restart_application();
+            } catch (error) {
+                addStatus('Please manually restart the application.', 'warning');
+                console.error('Error restarting:', error);
+            }
+        }
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

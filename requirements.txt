@@ -1,0 +1,14 @@
+pyautogui==0.9.54
+pydirectinput==1.0.4
+Pillow==10.2.0
+pynput==1.7.6
+keyboard==0.13.5
+numpy==1.26.4
+opencv-python==4.6.0.66
+pywebview==4.4.1
+easyocr==1.7.2
+rapidfuzz==3.14.3
+paddlepaddle==2.6.2
+paddleocr==2.7.3
+onnxruntime-directml==1.17.1
+mss==9.0.1

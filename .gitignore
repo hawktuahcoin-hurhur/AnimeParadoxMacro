@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# PyInstaller
+build/
+*.spec
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+config.json
+macro_config.json
+
+# Executable files (too large for GitHub)
+*.exe
+dist/*.exe
+Release/*.exe
+
+# Release zips
+*.zip

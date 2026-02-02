@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Overlay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .overlay-container {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: 4px solid rgba(59, 130, 246, 0.8);
+            border-radius: 12px;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .overlay-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 12px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: auto;
+            -webkit-app-region: drag;
+        }
+
+        .overlay-header h3 {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .overlay-controls {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .overlay-controls button {
+            padding: 5px 12px;
+            font-size: 12px;
+            font-family: 'Segoe UI', sans-serif;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 6px;
+            color: #93c5fd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .overlay-controls button:hover {
+            background: rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.6);
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            padding: 6px 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 6px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 12px;
+            color: #93c5fd;
+            pointer-events: auto;
+        }
+
+        .status-indicator.attached {
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay-container">
+        <div class="overlay-header">
+            <h3>🎮 Game View</h3>
+            <div class="overlay-controls">
+                <button onclick="attachRoblox()">Attach Roblox</button>
+                <button onclick="detachRoblox()">Detach</button>
+            </div>
+        </div>
+        <div class="status-indicator" id="status">Not Attached</div>
+    </div>
+
+    <script>
+        async function attachRoblox() {
+            try {
+                const result = await pywebview.api.attach_roblox();
+                const statusEl = document.getElementById('status');
+                if (result.success) {
+                    statusEl.textContent = 'Attached';
+                    statusEl.classList.add('attached');
+                } else {
+                    statusEl.textContent = result.error || 'Failed';
+                    statusEl.classList.remove('attached');
+                }
+            } catch (e) {
+                console.error('Attach error:', e);
+            }
+        }
+
+        async function detachRoblox() {
+            try {
+                await pywebview.api.detach_roblox();
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = 'Not Attached';
+                statusEl.classList.remove('attached');
+            } catch (e) {
+                console.error('Detach error:', e);
+            }
+        }
+    </script>
+</body>
+</html>
